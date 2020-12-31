@@ -103,7 +103,7 @@ def surveil_http_status(search_result):
                 "Count": http_status_collections[http_status],
                 "Threshold": http_status_count_threshold
             }
-            
+
     return response_alert if response_alert != {} else None
 
 
