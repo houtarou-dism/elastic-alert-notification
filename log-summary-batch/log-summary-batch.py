@@ -1,6 +1,4 @@
 import os
-import json
-import requests
 import datetime
 from dotenv import load_dotenv
 from itertools import groupby
@@ -85,33 +83,27 @@ def number_of_http_status_detections(search_result):
     return number_status_detections
 
 
-def exception_response(ex, slack_webhook):
+def exception_response(ex):
     """例外が発生した場合のレスポンスです。
 
     Args:
         ex (object): 例外情報
-        slack_webhook (str): Slack WebHook URL
     """
     response_json = {
         "timestamp": (datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S"),
         "message": "エラーが発生しました。",
         "detail": {
-            "exception_message": str(ex)
+            "Exception message": str(ex)
         }
     }
-    payload = {
-        "attachments": [
-            {
-                "fallback": "Log summary batch（Error occurred）",
-                "pretext": json.dumps(response_json,
-                                      indent=4, ensure_ascii=False)
-            }
-        ]
+
+    return {
+        "fallback": "Log summary batch（Error occurred）",
+        "body": response_json
     }
-    requests.post(slack_webhook, data=json.dumps(payload))
 
 
-def main(event, context):
+def lambda_handler(event, context):
 
     load_dotenv()
 
@@ -121,32 +113,20 @@ def main(event, context):
                    os.environ['ELASTICSEARCH_PASSWORD'])
     )
 
-    slack_webhook = os.environ['SLACK_URL']
+    index_name = os.environ['INDEX_NAME']
     kibana_url = os.environ['KIBANA_URL']
-
-    index_name = "nginx-" + (datetime.date.today() -
-                             datetime.timedelta(days=1)).strftime("%Y-%m-%d")
 
     query = {
         "_source": [
             "date", "audit_log", "response"
-        ],
-        "query": {
-            "range": {
-                "@timestamp": {
-                    "gte": "now-1d",
-                    "lt": "now"
-                }
-            }
-        }
+        ]
     }
 
     try:
         search_result = es.search(index=index_name, body=query, size=10000)
     except Exception as ex:
-        exception_response(ex, slack_webhook)
         es.close()
-        return -1
+        return exception_response(ex)
 
     response_json = {
         "Kibana URL": kibana_url,
@@ -161,20 +141,13 @@ def main(event, context):
         "Detailed attack types": detailed_attack_types(search_result),
     }
 
-    payload = {
-        "attachments": [
-            {
-                "fallback": "Log summary batch",
-                "pretext": json.dumps(response_json,
-                                      indent=4, ensure_ascii=False)
-            }
-        ]
-    }
-
-    requests.post(slack_webhook, data=json.dumps(payload))
-
     es.close()
+
+    return {
+        "fallback": "Log summary batch",
+        "body": response_json
+    }
 
 
 if __name__ == "__main__":
-    main({}, {})
+    lambda_handler({}, {})

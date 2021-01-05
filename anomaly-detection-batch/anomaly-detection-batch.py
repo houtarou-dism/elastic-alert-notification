@@ -1,7 +1,5 @@
 import os
 import re
-import json
-import requests
 import datetime
 import collections
 from dotenv import load_dotenv
@@ -138,44 +136,37 @@ def surveil_access_denied(search_result):
     return response_alert if response_alert != {} else None
 
 
-def exception_response(ex, slack_webhook):
+def exception_response(ex):
     """例外が発生した場合のレスポンスです。
 
     Args:
         ex (object): 例外情報
-        slack_webhook (str): Slack WebHook URL
     """
     response_json = {
         "timestamp": (datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S"),
         "message": "エラーが発生しました。",
         "detail": {
-            "exception_message": str(ex)
+            "Exception message": str(ex)
         }
     }
-    payload = {
-        "attachments": [
-            {
-                "fallback": "Anomaly detection batch（Error occurred）",
-                "pretext": json.dumps(response_json,
-                                      indent=4, ensure_ascii=False)
-            }
-        ]
+
+    return {
+        "fallback": "Anomaly detection batch（Error occurred）",
+        "body": response_json
     }
-    requests.post(slack_webhook, data=json.dumps(payload))
 
 
-def main(event, context):
+def lambda_handler(event, context):
 
     load_dotenv()
+
+    kibana_url = os.environ['KIBANA_URL']
 
     es = Elasticsearch(
         os.environ['ELASTICSEARCH_URL'],
         http_auth=(os.environ['ELASTICSEARCH_ID'],
                    os.environ['ELASTICSEARCH_PASSWORD'])
     )
-
-    slack_webhook = os.environ['SLACK_URL']
-    kibana_url = os.environ['KIBANA_URL']
 
     query = {
         "_source": [
@@ -184,7 +175,7 @@ def main(event, context):
         "query": {
             "range": {
                 "@timestamp": {
-                    "gte": "now-10m",
+                    "gte": "now-20m",
                     "lt": "now"
                 }
             }
@@ -194,16 +185,15 @@ def main(event, context):
     try:
         search_result = es.search(index="nginx-*", body=query, size=10000)
     except Exception as ex:
-        exception_response(ex, slack_webhook)
         es.close()
-        return - 1
+        return exception_response(ex)
 
     http_status_surveillance = surveil_http_status(search_result)
     access_denied_surveillance = surveil_access_denied(search_result)
 
     if http_status_surveillance is None and access_denied_surveillance is None:
         es.close()
-        return 0
+        return {}
 
     response_json = {
         "Kibana URL": kibana_url,
@@ -211,20 +201,13 @@ def main(event, context):
         "Access denied surveillance alert": access_denied_surveillance,
     }
 
-    payload = {
-        "attachments": [
-            {
-                "fallback": "Anomaly detection batch",
-                "pretext": json.dumps(response_json,
-                                      indent=4, ensure_ascii=False)
-            }
-        ]
-    }
-
-    requests.post(slack_webhook, data=json.dumps(payload))
-
     es.close()
+
+    return {
+        "fallback": "Anomaly detection batch",
+        "body": response_json
+    }
 
 
 if __name__ == "__main__":
-    main({}, {})
+    lambda_handler({}, {})
