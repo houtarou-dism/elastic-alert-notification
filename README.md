@@ -8,7 +8,9 @@ Slack is available as the destination for alerts.
 
 ## Usage
 
-### common
+### Create a zip file
+
+#### common
 
 Go to common directory.
 
@@ -24,7 +26,7 @@ Set environment variables to match your environment.
 
 Environment variables can also be set in lambda, and when set in lambda, they take precedence over .env values.
 
-[https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html)
+Ref. [https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html)
 
 ```
 vim .env
@@ -42,7 +44,7 @@ Zip
 zip -r slack-notification.zip .
 ```
 
-### log-summary-batch
+#### log-summary-batch
 
 Go to log-summary-batch directory.
 
@@ -58,7 +60,7 @@ Set environment variables to match your environment,
 
 Environment variables can also be set in lambda, and when set in lambda, they take precedence over .env values.
 
-[https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html)
+Ref. [https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html)
 
 ```
 vim .env
@@ -76,7 +78,7 @@ Zip
 zip -r log-summary-batch.zip .
 ```
 
-### anomaly-detection-batch
+#### anomaly-detection-batch
 
 Go to anomaly-detection-batch directory.
 
@@ -92,7 +94,7 @@ Set environment variables to match your environment,
 
 Environment variables can also be set in lambda, and when set in lambda, they take precedence over .env values.
 
-[https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html)
+Ref. [https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html)
 
 ```
 vim .env
@@ -109,6 +111,13 @@ Zip
 ```
 zip -r anomaly-detection-batch.zip .
 ```
+
+### Create a Lambda Function
+
+Ref.
+
+- https://docs.aws.amazon.com/lambda/latest/dg/getting-started-create-function.html
+- https://docs.aws.amazon.com/lambda/latest/dg/lambda-python.html
 
 
 
