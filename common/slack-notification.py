@@ -20,6 +20,9 @@ def lambda_handler(event, context):
     response_payload = json.loads(response["Payload"].read().decode(
         'utf8').replace("'", '"'))
 
+    if response_payload == {}:
+        return
+
     payload = {
         "attachments": [
             {
