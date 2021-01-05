@@ -1,5 +1,4 @@
 import os
-import ast
 import json
 import boto3
 import requests
@@ -18,8 +17,8 @@ def lambda_handler(event, context):
         Payload='{}',
     )
 
-    response_payload = ast.literal_eval(
-        response["Payload"].read().decode('utf-8'))
+    response_payload = json.loads(response["Payload"].read().decode(
+        'utf8').replace("'", '"'))
 
     payload = {
         "attachments": [
