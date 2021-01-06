@@ -119,5 +119,6 @@ Ref.
 - https://docs.aws.amazon.com/lambda/latest/dg/getting-started-create-function.html
 - https://docs.aws.amazon.com/lambda/latest/dg/lambda-python.html
 
+## Configuration diagram
 
-
+![image](https://user-images.githubusercontent.com/51282819/103773238-14c4d280-506e-11eb-9911-779d4ece4f37.png)
