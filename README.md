@@ -121,4 +121,4 @@ Ref.
 
 ## Configuration diagram
 
-![image](https://user-images.githubusercontent.com/51282819/103774833-89007580-5070-11eb-8df8-22f8de5ade62.png)
+![image](https://github.com/houtarou-dism/image/blob/main/modsecurity-elastic-alert-notification/v1.svg)
