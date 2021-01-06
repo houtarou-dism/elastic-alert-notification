@@ -121,4 +121,4 @@ Ref.
 
 ## Configuration diagram
 
-![image](https://user-images.githubusercontent.com/51282819/103773238-14c4d280-506e-11eb-9911-779d4ece4f37.png)
+![image](https://user-images.githubusercontent.com/51282819/103774833-89007580-5070-11eb-8df8-22f8de5ade62.png)
