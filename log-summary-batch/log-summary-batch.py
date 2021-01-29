@@ -113,8 +113,9 @@ def lambda_handler(event, context):
                    os.environ['ELASTICSEARCH_PASSWORD'])
     )
 
-    index_name = os.environ['INDEX_NAME']
     kibana_url = os.environ['KIBANA_URL']
+    index_name = "nginx-" + (datetime.date.today() -
+                             datetime.timedelta(days=1)).strftime("%Y-%m-%d")
 
     query = {
         "_source": [
