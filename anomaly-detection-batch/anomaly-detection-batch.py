@@ -121,10 +121,11 @@ def surveil_access_denied(search_result):
 
     response_alert = {}
     access_denied_ip_threshold = int(os.environ['ACCESS_DENIED_IP_THRESHOLD'])
-    ip_list = collections.Counter(get_access_denied_ip(search_result))
+    access_denied_count = get_access_denied_ip(search_result)
+    ip_list = collections.Counter(access_denied_count)
 
-    for ip in ip_list:
-        if ip_list[ip] >= access_denied_ip_threshold:
+    if len(access_denied_count) >= access_denied_ip_threshold:
+        for ip in ip_list:
             geo_ip = get_geo_ip(search_result)
             response_alert["Access denied " + ip] = {
                 "IP": ip,
